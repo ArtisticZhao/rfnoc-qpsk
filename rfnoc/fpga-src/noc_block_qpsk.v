@@ -213,8 +213,8 @@ module noc_block_qpsk #(
   wire [15:0] i_out;
   wire [15:0] q_out;
 
-  // instance ip
-
+  // ----------- instance ip
+  // instance Polar costas
   polar_costas polar_costas(
     .ce_clk(ce_clk),
     .ce_rst(~ce_rst),
@@ -223,7 +223,43 @@ module noc_block_qpsk #(
     .i_sync(i_out),
     .q_sync(q_out)
   );
-  // add out fifo and packing axis data
+
+  // instance BitSync ip
+  // NOTE: in this design the sample_rate = 16*symbol_rate
+  //       the bitsync require clk = 32*symbol_rate
+  //       So. downsample 2 times of i q data and use the ce_clk to satisfy
+  //       the bitsync clk requirement.
+
+  // Down sample
+  reg [15:0] i_out_div2;
+  reg div_flag;
+  always @(posedge ce_clk or posedge ce_rst) begin
+      if (ce_rst) begin
+          div_flag <= 0;
+          i_out_div2 <= 16'b0;
+      end
+      else begin
+          div_flag <= div_flag + 1'b1;
+          if (div_flag == 1'b1) begin
+              i_out_div2 <= i_out;
+          end
+          else begin
+              i_out_div2 <= i_out_div2;
+          end
+      end
+  end
+
+  wire signed [5:0] datain;   // Bit_Sync data input
+  assign datain = {6{i_out_div2[15]}};
+  BitSync tb_bs(
+    .rst(ce_rst),       // 复位信号，高电平有效
+    .clk(ce_clk),
+    .datain(datain),    // 输入数据 每个符号8个点
+    // .dataout(dataout),  // 延时处理后的输出数据
+    .Bit_Sync(Bit_Sync) // 位同步脉冲输出
+  );
+
+  // ----------- add out fifo and packing axis data
   wire [31:0] iq_out = {i_out, q_out};
   axi_fifo_flop #(.WIDTH(32+1))
   pipeline1_axi_fifo_flop (
@@ -239,7 +275,7 @@ module noc_block_qpsk #(
 
   /* Output Signals */
   assign pipe_out_tready = s_axis_data_tready;
-  assign s_axis_data_tvalid = pipe_out_tvalid;
+  assign s_axis_data_tvalid = Bit_Sync;       // use bitsync signal to ctrl axis bus sample
   assign s_axis_data_tlast  = pipe_out_tlast;
   assign s_axis_data_tdata  = pipe_out_tdata;
 endmodule
