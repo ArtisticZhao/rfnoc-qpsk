@@ -1,0 +1,5 @@
+$(addprefix SOURCES_PATH, \
+noc_block_qpsk.v \
+loop_filter.v  \
+polar_costas.v \
+) \
