@@ -2,4 +2,10 @@ $(addprefix SOURCES_PATH, \
 noc_block_qpsk.v \
 loop_filter.v  \
 polar_costas.v \
+BitSync.v \
+syncout.v \
+clktrans.v \
+differpd.v \
+monostable.v \
+controldivfreq.v \
 ) \
