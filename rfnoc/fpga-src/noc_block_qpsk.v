@@ -267,7 +267,7 @@ module noc_block_qpsk #(
     .reset(ce_rst),
     .clear(clear_tx_seqnum),
     .i_tdata({pipe_in_tlast,iq_out}),
-    .i_tvalid(pipe_in_tvalid),
+    .i_tvalid(Bit_Sync),
     .i_tready(pipe_in_tready),
     .o_tdata({pipe_out_tlast,pipe_out_tdata}),
     .o_tvalid(pipe_out_tvalid),
@@ -275,7 +275,7 @@ module noc_block_qpsk #(
 
   /* Output Signals */
   assign pipe_out_tready = s_axis_data_tready;
-  assign s_axis_data_tvalid = Bit_Sync;       // use bitsync signal to ctrl axis bus sample
+  assign s_axis_data_tvalid = pipe_out_tvalid;       // use bitsync signal to ctrl axis bus sample
   assign s_axis_data_tlast  = pipe_out_tlast;
   assign s_axis_data_tdata  = pipe_out_tdata;
 endmodule
