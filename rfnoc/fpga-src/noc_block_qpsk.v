@@ -223,6 +223,7 @@ module noc_block_qpsk #(
     .i_sync(i_out),
     .q_sync(q_out)
   );
+  wire [31:0] iq_out = {i_out, q_out};
 
   // instance BitSync ip
   // NOTE: in this design the sample_rate = 16*symbol_rate
@@ -259,15 +260,31 @@ module noc_block_qpsk #(
     .Bit_Sync(Bit_Sync) // 位同步脉冲输出
   );
 
+  // wire [31:0] iq_out = {i_out, q_out};
+  reg [31:0] iq_out_bitsync;
+  // keep bit sync data
+  always @(posedge ce_clk or posedge ce_rst) begin
+      if (ce_rst) begin
+          iq_out_bitsync <= 32'b0;
+      end
+      else begin
+          if (Bit_Sync) begin
+              iq_out_bitsync <= iq_out;
+          end
+          else begin
+              iq_out_bitsync <= iq_out_bitsync;
+          end
+      end
+  end
+
   // ----------- add out fifo and packing axis data
-  wire [31:0] iq_out = {i_out, q_out};
   axi_fifo_flop #(.WIDTH(32+1))
   pipeline1_axi_fifo_flop (
     .clk(ce_clk),
     .reset(ce_rst),
     .clear(clear_tx_seqnum),
     .i_tdata({pipe_in_tlast,iq_out}),
-    .i_tvalid(Bit_Sync),
+    .i_tvalid(pipe_in_tvalid),
     .i_tready(pipe_in_tready),
     .o_tdata({pipe_out_tlast,pipe_out_tdata}),
     .o_tvalid(pipe_out_tvalid),
