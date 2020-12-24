@@ -250,6 +250,7 @@ module noc_block_qpsk #(
       end
   end
 
+  wire Bit_Sync;
   wire signed [5:0] datain;   // Bit_Sync data input
   assign datain = {6{i_out_div2[15]}};
   BitSync tb_bs(
