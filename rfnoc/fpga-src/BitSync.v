@@ -58,14 +58,14 @@ module BitSync (
         .clk_q     (clk_q));
 
     //位同步形成及移相单元：形成位同步信号，对输入数据进行移相处理
-    wire Bit_Sync_pre;  // 仿真中发现同步标志位稳定的地方过于靠前, 需要delay一段时间 11个clk32
+    // wire Bit_Sync_pre;  // 仿真中发现同步标志位稳定的地方过于靠前, 需要delay一段时间 11个clk32
     syncout u7 (
         .rst      (rst),
         .clk32    (clk),
         .clk_i    (clk_i),
         .clk_d2   (clk_d2),
         .datain   (datain),
-        .Bit_Sync (Bit_Sync_pre),
+        .Bit_Sync (Bit_Sync),
         .dataout  (dataout));
 
 endmodule
