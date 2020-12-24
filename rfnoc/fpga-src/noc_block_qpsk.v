@@ -283,7 +283,7 @@ module noc_block_qpsk #(
     .clk(ce_clk),
     .reset(ce_rst),
     .clear(clear_tx_seqnum),
-    .i_tdata({pipe_in_tlast,iq_out}),
+    .i_tdata({pipe_in_tlast,iq_out_bitsync}),
     .i_tvalid(pipe_in_tvalid),
     .i_tready(pipe_in_tready),
     .o_tdata({pipe_out_tlast,pipe_out_tdata}),
