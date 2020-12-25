@@ -329,10 +329,6 @@ module noc_block_qpsk #(
   end
   assign on_last_pkt = Bit_Sync_flag & pipe_in_tlast;
 
-  assign i_tready = o_tready |  ~on_last_sample;
-  assign o_tvalid = i_tvalid &   on_last_sample;
-  assign o_tdata  = i_tdata;
-  assign o_tlast  = i_tlast  &  on_last_pkt;
   /* Output Signals */
   assign m_axis_data_tready = pipe_in_tready | ~Bit_Sync;
   assign s_axis_data_tvalid = pipe_in_tvalid & Bit_Sync;       // use bitsync signal to ctrl axis bus sample
