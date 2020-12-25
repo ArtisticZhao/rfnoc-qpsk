@@ -314,11 +314,14 @@ module noc_block_qpsk #(
   // generate on_last_pkt: this signal is the newest tlast after Bit_Sync
   // valid;
   reg Bit_Sync_flag;
+  reg Bit_Sync_flag_lengcy;
   wire on_last_pkt;
   always @(posedge ce_clk) begin
       if(ce_rst) begin
           Bit_Sync_flag <= 1'b0;
+          Bit_Sync_flag_lengcy <= 1'b0;
       end else begin
+          Bit_Sync_flag_lengcy = Bit_Sync_flag;
           if (Bit_Sync) begin
               Bit_Sync_flag <= 1'b1;
           end
@@ -327,7 +330,7 @@ module noc_block_qpsk #(
           end
       end
   end
-  assign on_last_pkt = Bit_Sync_flag & pipe_in_tlast;
+  assign on_last_pkt = Bit_Sync_flag_lengcy & pipe_in_tlast;
 
   /* Output Signals */
   assign m_axis_data_tready = ~Bit_Sync;
