@@ -313,28 +313,42 @@ module noc_block_qpsk #(
 
   // generate on_last_pkt: this signal is the newest tlast after Bit_Sync
   // valid;
-  reg Bit_Sync_flag;
-  reg Bit_Sync_flag_lengcy;
-  wire on_last_pkt;
-  always @(posedge ce_clk) begin
-      if(ce_rst) begin
-          Bit_Sync_flag <= 1'b0;
-          Bit_Sync_flag_lengcy <= 1'b0;
-      end else begin
-          Bit_Sync_flag_lengcy = Bit_Sync_flag;
-          if (Bit_Sync) begin
-              Bit_Sync_flag <= 1'b1;
-          end
-          if (pipe_in_tlast) begin
-              Bit_Sync_flag <= 1'b0;
-          end
-      end
-  end
-  assign on_last_pkt = Bit_Sync_flag_lengcy & pipe_in_tlast;
+  // reg Bit_Sync_flag;
+  // reg Bit_Sync_flag_lengcy;
+  // wire on_last_pkt;
+  // always @(posedge ce_clk) begin
+  //     if(ce_rst) begin
+  //         Bit_Sync_flag <= 1'b0;
+  //         Bit_Sync_flag_lengcy <= 1'b0;
+  //     end else begin
+  //         Bit_Sync_flag_lengcy = Bit_Sync_flag;
+  //         if (Bit_Sync) begin
+  //             Bit_Sync_flag <= 1'b1;
+  //         end
+  //         if (pipe_in_tlast) begin
+  //             Bit_Sync_flag <= 1'b0;
+  //         end
+  //     end
+  // end
+  // assign on_last_pkt = Bit_Sync_flag_lengcy & pipe_in_tlast;
+  //
+  // [> Output Signals <]
+  // assign m_axis_data_tready = s_axis_data_tready | ~Bit_Sync;
+  // assign s_axis_data_tvalid = pipe_in_tvalid & Bit_Sync;       // use bitsync signal to ctrl axis bus sample
+  // assign s_axis_data_tdata  = iq_out_bitsync;
+  // assign s_axis_data_tlast  = pipe_in_tlast & on_last_pkt;
 
-  /* Output Signals */
-  assign m_axis_data_tready = s_axis_data_tready | ~Bit_Sync;
-  assign s_axis_data_tvalid = pipe_in_tvalid & Bit_Sync;       // use bitsync signal to ctrl axis bus sample
-  assign s_axis_data_tdata  = iq_out_bitsync;
-  assign s_axis_data_tlast  = pipe_in_tlast & on_last_pkt;
+
+  // keep one in n
+  keep_one_in_n #(
+    .WIDTH(32),
+    .MAX_N(2**16-1))
+  keep_one_in_n (
+    .clk(ce_clk),
+    .reset(ce_rst | clear_tx_seqnum),
+    .vector_mode(0), .n(16),
+    .i_tdata(iq_out_bitsync), .i_tlast(m_axis_data_tlast), .i_tvalid(m_axis_data_tvalid), .i_tready(m_axis_data_tready),
+    .o_tdata(s_axis_data_tdata), .o_tlast(s_axis_data_tlast), .o_tvalid(s_axis_data_tvalid), .o_tready(s_axis_data_tready));
+
 endmodule
+
