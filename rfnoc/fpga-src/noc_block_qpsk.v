@@ -330,8 +330,8 @@ module noc_block_qpsk #(
   assign on_last_pkt = Bit_Sync_flag & pipe_in_tlast;
 
   /* Output Signals */
-  assign m_axis_data_tready = s_axis_data_tready | ~Bit_Sync;
-  assign s_axis_data_tvalid = pipe_in_tvalid & Bit_Sync;       // use bitsync signal to ctrl axis bus sample
+  assign m_axis_data_tready = ~Bit_Sync;
+  assign s_axis_data_tvalid = Bit_Sync;       // use bitsync signal to ctrl axis bus sample
   assign s_axis_data_tdata  = iq_out_bitsync;
-  assign s_axis_data_tlast  = pipe_in_tlast & on_last_pkt;
+  assign s_axis_data_tlast  = on_last_pkt;
 endmodule
