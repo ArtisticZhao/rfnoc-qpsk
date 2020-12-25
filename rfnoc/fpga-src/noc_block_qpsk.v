@@ -84,6 +84,7 @@ module noc_block_qpsk #(
 
   ////////////////////////////////////////////////////////////
   //
+  //
   // AXI Wrapper
   // Convert RFNoC Shell interface into AXI stream interface
   //
@@ -92,14 +93,15 @@ module noc_block_qpsk #(
   wire        m_axis_data_tlast;
   wire        m_axis_data_tvalid;
   wire        m_axis_data_tready;
-
+  wire [127:0] m_axis_data_tuser;
   wire [31:0] s_axis_data_tdata;
   wire        s_axis_data_tlast;
   wire        s_axis_data_tvalid;
   wire        s_axis_data_tready;
+  wire [127:0] s_axis_data_tuser;
 
   axi_wrapper #(
-    .SIMPLE_MODE(1))
+    .SIMPLE_MODE(0))   // don't auto process the header! auto handle header require package 1-to-1 !!!
   axi_wrapper (
     .clk(ce_clk), .reset(ce_rst),
     .bus_clk(bus_clk), .bus_rst(bus_rst),
@@ -112,12 +114,12 @@ module noc_block_qpsk #(
     .m_axis_data_tlast(m_axis_data_tlast),
     .m_axis_data_tvalid(m_axis_data_tvalid),
     .m_axis_data_tready(m_axis_data_tready),
-    .m_axis_data_tuser(),
+    .m_axis_data_tuser(m_axis_data_tuser),
     .s_axis_data_tdata(s_axis_data_tdata),
     .s_axis_data_tlast(s_axis_data_tlast),
     .s_axis_data_tvalid(s_axis_data_tvalid),
     .s_axis_data_tready(s_axis_data_tready),
-    .s_axis_data_tuser(),
+    .s_axis_data_tuser(s_axis_data_tuser),
     .m_axis_config_tdata(),
     .m_axis_config_tlast(),
     .m_axis_config_tvalid(),
@@ -184,27 +186,45 @@ module noc_block_qpsk #(
     endcase
   end
 
+  // Modify packet header data, same as input except SRC / DST SID fields.
+  cvita_hdr_modify cvita_hdr_modify (
+    .header_in(m_axis_data_tuser),
+    .header_out(s_axis_data_tuser),
+    .use_pkt_type(1'b0),       .pkt_type(),
+    .use_has_time(1'b0),       .has_time(),
+    .use_eob(1'b0),            .eob(),
+    .use_seqnum(1'b0),         .seqnum(),
+    .use_length(1'b0),         .length(),
+    .use_payload_length(1'b0), .payload_length(),
+    .use_src_sid(1'b1),        .src_sid(src_sid),
+    .use_dst_sid(1'b1),        .dst_sid(next_dst_sid),
+    .use_vita_time(1'b0),      .vita_time());
+
   // add fifo and get i, q data
   wire [31:0] pipe_in_tdata;
   wire pipe_in_tvalid, pipe_in_tlast;
   wire pipe_in_tready;
 
-  wire [31:0] pipe_out_tdata;
-  wire pipe_out_tvalid, pipe_out_tlast;
-  wire pipe_out_tready;
+  // wire [31:0] pipe_out_tdata;
+  // wire pipe_out_tvalid, pipe_out_tlast;
+  // wire pipe_out_tready;
 
-  // Adding FIFO to ensure Pipeline
-  axi_fifo_flop #(.WIDTH(32+1))
-  pipeline0_axi_fifo_flop (
-    .clk(ce_clk),
-    .reset(ce_rst),
-    .clear(clear_tx_seqnum),
-    .i_tdata({m_axis_data_tlast,m_axis_data_tdata}),
-    .i_tvalid(m_axis_data_tvalid),
-    .i_tready(m_axis_data_tready),
-    .o_tdata({pipe_in_tlast,pipe_in_tdata}),
-    .o_tvalid(pipe_in_tvalid),
-    .o_tready(pipe_in_tready));
+  // // Adding FIFO to ensure Pipeline
+  // axi_fifo_flop #(.WIDTH(32+1))
+  // pipeline0_axi_fifo_flop (
+  //   .clk(ce_clk),
+  //   .reset(ce_rst),
+  //   .clear(clear_tx_seqnum),
+  //   .i_tdata({m_axis_data_tlast,m_axis_data_tdata}),
+  //   .i_tvalid(m_axis_data_tvalid),
+  //   .i_tready(m_axis_data_tready),
+  //   .o_tdata({pipe_in_tlast,pipe_in_tdata}),
+  //   .o_tvalid(pipe_in_tvalid),
+  //   .o_tready(pipe_in_tready));
+  assign pipe_in_tdata = m_axis_data_tdata;
+  assign pipe_in_tlast = m_axis_data_tlast;
+  assign pipe_in_tready = m_axis_data_tready;
+  assign pipe_in_tvalid = m_axis_data_tvalid;
 
   wire [15:0] i = pipe_in_tdata[31:16];
   wire [15:0] q = pipe_in_tdata[15:0];
@@ -279,21 +299,43 @@ module noc_block_qpsk #(
   end
 
   // ----------- add out fifo and packing axis data
-  axi_fifo_flop #(.WIDTH(32+1))
-  pipeline1_axi_fifo_flop (
-    .clk(ce_clk),
-    .reset(ce_rst),
-    .clear(clear_tx_seqnum),
-    .i_tdata({Bit_Sync,iq_out_bitsync}),
-    .i_tvalid(Bit_Sync),
-    .i_tready(pipe_in_tready),
-    .o_tdata({pipe_out_tlast,pipe_out_tdata}),
-    .o_tvalid(pipe_out_tvalid),
-    .o_tready(pipe_out_tready));
+  // axi_fifo_flop #(.WIDTH(32+1))
+  // pipeline1_axi_fifo_flop (
+  //   .clk(ce_clk),
+  //   .reset(ce_rst),
+  //   .clear(clear_tx_seqnum),
+  //   .i_tdata({Bit_Sync,iq_out_bitsync}),
+  //   .i_tvalid(Bit_Sync),
+  //   .i_tready(pipe_in_tready),
+  //   .o_tdata({pipe_out_tlast,pipe_out_tdata}),
+  //   .o_tvalid(pipe_out_tvalid),
+  //   .o_tready(pipe_out_tready));
 
+  // generate on_last_pkt: this signal is the newest tlast after Bit_Sync
+  // valid;
+  reg Bit_Sync_flag;
+  wire on_last_pkt;
+  always @(posedge ce_clk) begin
+      if(ce_rst) begin
+          Bit_Sync_flag <= 1'b0;
+      end else begin
+          if (Bit_Sync) begin
+              Bit_Sync_flag <= 1'b1;
+          end
+          if (pipe_in_tlast) begin
+              Bit_Sync_flag <= 1'b0;
+          end
+      end
+  end
+  assign on_last_pkt = Bit_Sync_flag & pipe_in_tlast;
+
+  assign i_tready = o_tready |  ~on_last_sample;
+  assign o_tvalid = i_tvalid &   on_last_sample;
+  assign o_tdata  = i_tdata;
+  assign o_tlast  = i_tlast  &  on_last_pkt;
   /* Output Signals */
-  assign pipe_out_tready = s_axis_data_tready;
-  assign s_axis_data_tvalid = pipe_out_tvalid;       // use bitsync signal to ctrl axis bus sample
-  assign s_axis_data_tlast  = pipe_out_tlast;
-  assign s_axis_data_tdata  = pipe_out_tdata;
+  assign m_axis_data_tready = pipe_in_tready | ~Bit_Sync;
+  assign s_axis_data_tvalid = pipe_in_tvalid & Bit_Sync;       // use bitsync signal to ctrl axis bus sample
+  assign s_axis_data_tdata  = iq_out_bitsync;
+  assign s_axis_data_tlast  = pipe_in_tlast & on_last_pkt;
 endmodule
