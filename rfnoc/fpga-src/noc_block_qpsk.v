@@ -346,7 +346,7 @@ module noc_block_qpsk #(
   keep_one_in_n (
     .clk(ce_clk),
     .reset(ce_rst | clear_tx_seqnum),
-    .vector_mode(0), .n(16),
+    .n(16),
     .i_tdata(iq_out_bitsync), .i_tlast(m_axis_data_tlast), .i_tvalid(m_axis_data_tvalid), .i_tready(m_axis_data_tready),
     .o_tdata(s_axis_data_tdata), .o_tlast(s_axis_data_tlast), .o_tvalid(s_axis_data_tvalid), .o_tready(s_axis_data_tready));
 
