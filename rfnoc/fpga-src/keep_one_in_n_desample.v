@@ -7,7 +7,7 @@
 // Note: n == 0 lets everything through.
 // Warning: Sample / packet counts reset when n is changed, caution if changing during operation!
 
-module keep_one_in_n #(
+module keep_one_in_n_desample #(
   parameter WIDTH=32,
   parameter MAX_N=65535
 )(

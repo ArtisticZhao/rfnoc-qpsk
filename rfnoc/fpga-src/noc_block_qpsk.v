@@ -340,10 +340,10 @@ module noc_block_qpsk #(
 
 
   // keep one in n
-  keep_one_in_n #(
+  keep_one_in_n_desample #(
     .WIDTH(32),
     .MAX_N(2**16-1))
-  keep_one_in_n (
+  keep_one_in_n_desample(
     .clk(ce_clk),
     .reset(ce_rst | clear_tx_seqnum),
     .n(16),
