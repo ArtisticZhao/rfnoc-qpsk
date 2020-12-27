@@ -26,7 +26,6 @@
 BASE_DIR = $(FPGA_TOP_DIR)/usrp3/top
 # Include viv_sim_preample after defining BASE_DIR
 include $(BASE_DIR)/../tools/make/viv_sim_preamble.mak
-
 #-------------------------------------------------
 # Testbench Specific
 #-------------------------------------------------
@@ -37,7 +36,16 @@ SIM_TOP = noc_block_qpsk_tb
 # additional user created files
 SIM_SRCS = \
 $(abspath noc_block_qpsk_tb.sv) \
-$(abspath ../../fpga-src/noc_block_qpsk.v)
+$(abspath ../../fpga-src/noc_block_qpsk.v) \
+$(abspath ../../fpga-src/BitSync.v) \
+$(abspath ../../fpga-src/syncout.v) \
+$(abspath ../../fpga-src/clktrans.v) \
+$(abspath ../../fpga-src/differpd.v) \
+$(abspath ../../fpga-src/monostable.v) \
+$(abspath ../../fpga-src/loop_filter.v) \
+$(abspath ../../fpga-src/polar_costas.v) \
+$(abspath ../../fpga-src/keep_one_in_n_desample.v) \
+$(abspath ../../fpga-src/controldivfreq.v) \
 
 MODELSIM_USER_DO =
 

@@ -1,0 +1,4 @@
+build/
+xsim_proj/
+
+*.log

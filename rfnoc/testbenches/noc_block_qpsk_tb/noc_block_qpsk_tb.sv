@@ -75,15 +75,15 @@ module noc_block_qpsk_tb();
     ********************************************************/
     `TEST_CASE_START("Write / readback user registers");
     random_word = $random();
-    tb_streamer.write_user_reg(sid_noc_block_qpsk, noc_block_qpsk.SR_TEST_REG_0, random_word);
+    tb_streamer.write_user_reg(sid_noc_block_qpsk, noc_block_qpsk.SR_QPSK_DISP_MODE, random_word);
     tb_streamer.read_user_reg(sid_noc_block_qpsk, 0, readback);
     $sformat(s, "User register 0 incorrect readback! Expected: %0d, Actual %0d", readback[31:0], random_word);
     `ASSERT_ERROR(readback[31:0] == random_word, s);
-    random_word = $random();
-    tb_streamer.write_user_reg(sid_noc_block_qpsk, noc_block_qpsk.SR_TEST_REG_1, random_word);
-    tb_streamer.read_user_reg(sid_noc_block_qpsk, 1, readback);
-    $sformat(s, "User register 1 incorrect readback! Expected: %0d, Actual %0d", readback[31:0], random_word);
-    `ASSERT_ERROR(readback[31:0] == random_word, s);
+//    random_word = $random();
+//    tb_streamer.write_user_reg(sid_noc_block_qpsk, noc_block_qpsk.SR_TEST_REG_1, random_word);
+//    tb_streamer.read_user_reg(sid_noc_block_qpsk, 1, readback);
+//    $sformat(s, "User register 1 incorrect readback! Expected: %0d, Actual %0d", readback[31:0], random_word);
+//    `ASSERT_ERROR(readback[31:0] == random_word, s);
     `TEST_CASE_DONE(1);
 
     /********************************************************
@@ -96,6 +96,7 @@ module noc_block_qpsk_tb();
       begin
         cvita_payload_t send_payload;
         for (int i = 0; i < SPP/2; i++) begin
+          $display("sim data: %0d", i);
           send_payload.push_back(64'(i));
         end
         tb_streamer.send(send_payload);
