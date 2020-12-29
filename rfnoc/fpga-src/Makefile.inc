@@ -9,5 +9,5 @@ RFNOC_SRCS += $(addprefix $(RFNOC_OOTEXAMPLE_DIR)/fpga-src/, \
     monostable.v \
     controldivfreq.v \
     keep_one_in_n_desample.v \
-    keep_one_in_n_zip.y \
+    keep_one_in_n_zip.v \
 )
