@@ -57,9 +57,17 @@ module keep_one_in_n_zip #(
       end
     end
   end
-
-  assign i_tready = o_tready | ~on_last_sample;
-  assign o_tvalid = i_tvalid & on_last_sample;
+  reg on_last_sample_d;
+  always @(posedge clk or posedge reset) begin
+      if (reset) begin
+          on_last_sample_d <= 1'b0;
+      end
+      else begin
+          on_last_sample_d <= on_last_sample;
+      end
+  end
+  assign i_tready = o_tready | ~on_last_sample_d;
+  assign o_tvalid = i_tvalid & on_last_sample_d;
   assign o_tdata  = o_tdata_reg;
   assign o_tlast  = i_tlast  & on_last_pkt;
 
