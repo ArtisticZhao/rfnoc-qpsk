@@ -29,21 +29,21 @@ module keep_one_in_n_zip #(
       if (i_tvalid & i_tready) begin
         if (on_last_sample) begin
           sample_cnt <= 1;
-          o_tdata_reg[15:8]  <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
+                  o_tdata_reg[15:8]  <= 8'h3e;
         end else begin
           sample_cnt <= sample_cnt + 1'd1;
           case (sample_cnt)
-              2: begin
-                  o_tdata_reg[31:24] <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
-              end
               1: begin
-                  o_tdata_reg[23:16] <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
+                  o_tdata_reg[23:16] <= 8'ha1;
               end
-              4: begin
-                  o_tdata_reg[15:8]  <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
+              2: begin
+                  o_tdata_reg[31:24] <= 8'hbd;
               end
               3: begin
-                  o_tdata_reg[7:0]   <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
+                  o_tdata_reg[7:0]   <= 8'hef;
+              end
+              4: begin
+                  o_tdata_reg[15:8]  <= 8'h3e;
               end
           endcase
         end
