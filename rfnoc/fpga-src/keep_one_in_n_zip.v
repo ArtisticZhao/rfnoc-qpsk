@@ -19,7 +19,7 @@ module keep_one_in_n_zip #(
 
   wire on_last_sample  = ( sample_cnt >= n_reg );
   wire on_last_pkt     = ( pkt_cnt >= n_reg    );
-  `define CUTTED_IQDATA =  {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]}
+  
   always @(posedge clk) begin
     if (reset) begin
        sample_cnt <= 1;
@@ -29,21 +29,21 @@ module keep_one_in_n_zip #(
       if (i_tvalid & i_tready) begin
         if (on_last_sample) begin
           sample_cnt <= 1;
-                  o_tdata_reg[15:8]  <= CUTTED_IQDATA;
+                  o_tdata_reg[15:8]  <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
         end else begin
           sample_cnt <= sample_cnt + 1'd1;
           case (sample_cnt)
               1: begin
-                  o_tdata_reg[23:16] <= CUTTED_IQDATA;
+                  o_tdata_reg[23:16] <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
               end
               2: begin
-                  o_tdata_reg[31:24] <= CUTTED_IQDATA;
+                  o_tdata_reg[31:24] <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
               end
               3: begin
-                  o_tdata_reg[7:0]   <= CUTTED_IQDATA;
+                  o_tdata_reg[7:0]   <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
               end
               4: begin
-                  o_tdata_reg[15:8]  <= CUTTED_IQDATA;
+                  o_tdata_reg[15:8]  <= {i_tdata[31], i_tdata[27:25] ,i_tdata[15], i_tdata[11:9]};
               end
           endcase
         end
