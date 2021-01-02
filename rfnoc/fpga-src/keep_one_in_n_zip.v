@@ -36,10 +36,10 @@ module keep_one_in_n_zip #(
               1: begin
                   o_tdata_reg[23:16] <= i_tdata[31:24];
               end
-              2: begin
+              3: begin
                   o_tdata_reg[31:24] <= i_tdata[31:24];
               end
-              3: begin
+              2: begin
                   o_tdata_reg[7:0]   <= i_tdata[31:24];
               end
               4: begin
