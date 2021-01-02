@@ -23,5 +23,7 @@
 install(FILES
     api.h
     qpsk.h
-    qpsk_block_ctrl.hpp DESTINATION include/qpsk
+    qpsk_block_ctrl.hpp
+    slice.h
+    slice_block_ctrl.hpp DESTINATION include/qpsk
 )

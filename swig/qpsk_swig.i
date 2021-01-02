@@ -16,7 +16,10 @@
 #include "ettus/device3.h"
 #include "ettus/rfnoc_block_impl.h"
 #include "qpsk/qpsk.h"
+#include "qpsk/slice.h"
 %}
 
 %include "qpsk/qpsk.h"
 GR_SWIG_BLOCK_MAGIC2(qpsk, qpsk);
+%include "qpsk/slice.h"
+GR_SWIG_BLOCK_MAGIC2(qpsk, slice);

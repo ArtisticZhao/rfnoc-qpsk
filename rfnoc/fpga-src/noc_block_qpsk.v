@@ -352,15 +352,15 @@ module noc_block_qpsk #(
     .reset(ce_rst | clear_tx_seqnum),
     .n(16),
     .i_tdata(iq_out_bitsync), .i_tlast(m_axis_data_tlast), .i_tvalid(m_axis_data_tvalid), .i_tready(m_axis_data_tready),
-    .o_tdata(s_axis_data_tdata_d), .o_tlast(s_axis_data_tlast_d), .o_tvalid(s_axis_data_tvalid_d), .o_tready(s_axis_data_tready_d));
-
- keep_one_in_n_zip #(
- .WIDTH(32),
- .MAX_N(15)
- )keep_zip(
-    .clk(ce_clk),
-    .reset(ce_rst | clear_tx_seqnum),
-    .i_tdata(s_axis_data_tdata_d), .i_tlast(s_axis_data_tlast_d), .i_tvalid(s_axis_data_tvalid_d), .i_tready(s_axis_data_tready_d),
     .o_tdata(s_axis_data_tdata), .o_tlast(s_axis_data_tlast), .o_tvalid(s_axis_data_tvalid), .o_tready(s_axis_data_tready));
+
+ // keep_one_in_n_zip #(
+ // .WIDTH(32),
+ // .MAX_N(15)
+ // )keep_zip(
+ //    .clk(ce_clk),
+ //    .reset(ce_rst | clear_tx_seqnum),
+ //    .i_tdata(s_axis_data_tdata_d), .i_tlast(s_axis_data_tlast_d), .i_tvalid(s_axis_data_tvalid_d), .i_tready(s_axis_data_tready_d),
+ //    .o_tdata(s_axis_data_tdata), .o_tlast(s_axis_data_tlast), .o_tvalid(s_axis_data_tvalid), .o_tready(s_axis_data_tready));
 endmodule
 

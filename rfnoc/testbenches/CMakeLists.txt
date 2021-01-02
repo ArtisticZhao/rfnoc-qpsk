@@ -1,1 +1,2 @@
 add_subdirectory(noc_block_qpsk_tb)
+add_subdirectory(noc_block_slice_tb)

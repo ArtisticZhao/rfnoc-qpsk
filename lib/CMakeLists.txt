@@ -25,6 +25,8 @@ include(GrPlatform) #define LIB_SUFFIX
 list(APPEND qpsk_sources
     qpsk_impl.cc
     qpsk_block_ctrl_impl.cpp
+    slice_impl.cc
+    slice_block_ctrl_impl.cpp
 )
 
 set(qpsk_sources "${qpsk_sources}" PARENT_SCOPE)

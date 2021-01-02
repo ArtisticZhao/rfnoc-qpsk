@@ -10,4 +10,7 @@ RFNOC_SRCS += $(addprefix $(RFNOC_OOTEXAMPLE_DIR)/fpga-src/, \
     controldivfreq.v \
     keep_one_in_n_desample.v \
     keep_one_in_n_zip.v \
+
+    noc_block_slice.v \
+    slice.v \
 )
