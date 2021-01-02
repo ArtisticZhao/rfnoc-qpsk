@@ -29,20 +29,20 @@ module keep_one_in_n_zip #(
       if (i_tvalid & i_tready) begin
         if (on_last_sample) begin
           sample_cnt <= 1;
-                  o_tdata_reg[15:8]  <= i_tdata[31:24];
+                  o_tdata_reg[7:0]  <= i_tdata[31:24];
         end else begin
           sample_cnt <= sample_cnt + 1'd1;
           case (sample_cnt)
-              1: begin
+              2: begin
                   o_tdata_reg[23:16] <= i_tdata[31:24];
               end
               3: begin
                   o_tdata_reg[31:24] <= i_tdata[31:24];
               end
-              2: begin
+              4: begin
                   o_tdata_reg[7:0]   <= i_tdata[31:24];
               end
-              4: begin
+              1: begin
                   o_tdata_reg[15:8]  <= i_tdata[31:24];
               end
           endcase
