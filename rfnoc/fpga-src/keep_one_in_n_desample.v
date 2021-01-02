@@ -30,13 +30,18 @@ module keep_one_in_n_desample #(
   wire on_last_sample  = ( sample_cnt >= n_reg );
   wire on_last_pkt     = ( pkt_cnt >= n_reg    );
 
+  // add to test
+  reg [7:0] test_cnt;
+
   always @(posedge clk) begin
     if (reset) begin
        sample_cnt <= 1;
        pkt_cnt    <= 1;
+       test_cnt <= 8'b0;
     end else begin
       if (i_tvalid & i_tready) begin
         if (on_last_sample) begin
+          test_cnt <= test_cnt + 8'b1;
           sample_cnt <= 1;
         end else begin
           sample_cnt <= sample_cnt + 1'd1;
@@ -54,7 +59,7 @@ module keep_one_in_n_desample #(
 
   assign i_tready = o_tready | ~on_last_sample;
   assign o_tvalid = i_tvalid & on_last_sample;
-  assign o_tdata  = i_tdata;
+  assign o_tdata  = {4{test_cnt}};
   assign o_tlast  = i_tlast  & on_last_pkt;
 
 endmodule // keep_one_in_n_vec

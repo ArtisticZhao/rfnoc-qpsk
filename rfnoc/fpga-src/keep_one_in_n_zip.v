@@ -19,7 +19,7 @@ module keep_one_in_n_zip #(
 
   wire on_last_sample  = ( sample_cnt >= n_reg );
   wire on_last_pkt     = ( pkt_cnt >= n_reg    );
-  
+
   always @(posedge clk) begin
     if (reset) begin
        sample_cnt <= 1;
